@@ -13,4 +13,4 @@ test/version_tmp
 tmp
 
 citi_account.yaml
-spec/fixtures/reports
+output/

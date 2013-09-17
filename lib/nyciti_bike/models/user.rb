@@ -9,7 +9,7 @@
 require File.expand_path('../bike_trip.rb', __FILE__)
 
 class User
-  REPORT_DIR = File.expand_path('../../../../spec/fixtures/reports', __FILE__)
+  REPORT_DIR = File.expand_path('../../../../output/raw', __FILE__)
 
   @@total_count = 0
   
