@@ -1,5 +1,5 @@
 =begin
-  * Name: citi_crawler.rb
+  * Name: citi_scraper.rb
   * Description: 
   * Author: Bob Gardner
   * Date: 9/16/13
@@ -26,6 +26,11 @@ class CitiCrawler
   def get_trips
     @agent.click('Trips')
     rows = Nokogiri::HTML(@agent.page.body).xpath('//table/tbody/tr')
+    # reject rows with invalid date or durations < 2 minutes
+    rows = rows.reject do |row|
+      row.at_xpath('td[5]/text()').to_s.strip.empty? ||
+              row.at_xpath('td[6]/text()').to_s.match(/(\d{1,2})m/)[1].to_i < 2
+    end
     trips = rows.collect do |row|
       trip = BikeTrip.new
       [
