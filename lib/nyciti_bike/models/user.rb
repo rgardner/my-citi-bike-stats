@@ -25,14 +25,14 @@ class User
     @bike_trips = []
   end
 
-  # sum total of the duration of each trip in minutes
+  # sum total of the duration of each trip in seconds
   def total_time
-    @bike_trips.inject(0) { |sum, trip| sum += trip.duration } / SECS_PER_MIN
+    @bike_trips.inject(0) { |sum, trip| sum += trip.duration }
   end
 
   # average cost per minute biking
   def effective_cost_per_minute
-    ANNUAL_COST / total_time 
+    ANNUAL_COST * SECS_PER_MIN / total_time
   end
 
   # average cost per trip

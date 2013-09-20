@@ -15,6 +15,7 @@ require 'yaml'
 LOGIN_SUCCESS = 'Welcome To Citi Bike!'
 LOGIN_INFO = YAML.load_file(File.expand_path('../../config/citi_account.yaml',
                             __FILE__))
+SECS_PER_MIN = 60.0
 
 driver = CitiCrawler.new
 username = LOGIN_INFO['username']
@@ -31,6 +32,8 @@ puts LOGIN_SUCCESS
 user = User.new(username)
 
 user.bike_trips = driver.get_trips
-printf("Total time:\t%s minutes\n", user.total_time)
-printf("Cost per minute:\t$%s\n", user.effective_cost_per_minute)
-printf("Cost per trip:\t$%s\n", user.effective_cost_per_trip)
+printf("Total time:\t\t%d minutes\n", user.total_time / SECS_PER_MIN)
+printf("Cost per minute:\t$%.2f\n", user.effective_cost_per_minute)
+printf("Cost per trip:\t\t$%.2f\n", user.effective_cost_per_trip)
+puts("Last trip:")
+puts(user.bike_trips[user.bike_trips.count - 1].to_csv)
