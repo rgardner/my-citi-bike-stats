@@ -2,15 +2,16 @@
   * Name: bike_trip.rb
   * Description: 
   * Author: Bob Gardner
-  * Date: 9/16/13
+  * Date: 10/24/13
   * License: MIT
 =end
 
 require 'date'
 
 class BikeTrip
-  DATE_FORMAT = "%x"                       # current format as of 9/17/2013
-  DURATION_REGEX = /(\d{1,2})m (\d{1,2})s/ # current format as of 9/17/2013
+  DATE_FORMAT = "%D"                         # citibike format as of 10/24/2013
+  DURATION_REGEX = /(\d{1,2})m (\d{1,2})s/   # citibike format as of 10/24/2013
+  SECS_PER_MIN = 60.0
 
   attr_accessor :id, :start_location, :end_location, :date, :duration
 
@@ -21,12 +22,16 @@ class BikeTrip
 
   # Duration of trip in seconds
   def duration=(duration)
-    secs_per_min = 60
-    match = DURATION_REGEX.match(duration)
-    @duration = match[1].to_i * secs_per_min + match[2].to_i
+    if duration.is_a? Integer
+      @duration = duration
+    else
+      match = DURATION_REGEX.match(duration)
+      @duration = match[1].to_i * SECS_PER_MIN + match[2].to_i
+    end
   end
 
   def to_csv
-    "#{@id}, #{@start_location}, #{@end_location}, #{@date}, #{@duration}"
+    date_formatted = @date.strftime(DATE_FORMAT)
+    "#{@id},#{@start_location},#{@end_location},#{date_formatted},#{@duration}"
   end
 end
