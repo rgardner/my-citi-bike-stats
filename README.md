@@ -12,7 +12,7 @@ Getting Started
   1. run bundle install -> bundle update
   2. Add /config/citi_account.yaml with username and password fields
 2. Learn about how you use the Citi Bike program
-  1. run the executables in /bin/
+  1. run nyciti_driver.rb in /bin/
   2. create your own executables in /bin/
 
 TODO
