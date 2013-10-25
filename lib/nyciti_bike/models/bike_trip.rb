@@ -11,7 +11,7 @@ require 'date'
 class BikeTrip
   DATE_FORMAT = "%D"                         # citibike format as of 10/24/2013
   DURATION_REGEX = /(\d{1,2})m (\d{1,2})s/   # citibike format as of 10/24/2013
-  SECS_PER_MIN = 60.0
+  SECS_PER_MIN = 60
 
   attr_accessor :id, :start_location, :end_location, :date, :duration
 
