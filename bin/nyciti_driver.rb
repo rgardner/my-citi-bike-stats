@@ -27,7 +27,7 @@ class Optparse
     options                = OpenStruct.new
     options.trips_file     = nil
     options.trips          = 1
-    options.report_full    = true
+    options.save           = false
 
     opt_parser = OptionParser.new do |opts|
       opts.banner = "Usage: nyciti_driver.rb [options]"
@@ -45,8 +45,8 @@ class Optparse
         options.trips = n
       end
 
-      opts.on("-s", "--short", "Print short user report") do |v|
-        options.report_full = v
+      opts.on("-s", "--save", "Save date from citibikenyc.com to file") do |v|
+        options.save = v
       end
 
       opts.separator ""
@@ -86,19 +86,12 @@ else
 
   user = User.new(username)
   user.bike_trips = driver.get_trips
-  user.bike_trips_to_csv
+  user.bike_trips_to_csv if options.save
 end
 
-if options.full_report
-  # TODO: add full report here; for now, same as simple
-  printf("Total time:\t\t%d minutes\n", user.total_time / SECS_PER_MIN)
-  printf("Cost per minute:\t$%.2f\n",   user.effective_cost_per_minute)
-  printf("Cost per trip:\t\t$%.2f\n",   user.effective_cost_per_trip)
-else
-  printf("Total time:\t\t%d minutes\n", user.total_time / SECS_PER_MIN)
-  printf("Cost per minute:\t$%.2f\n",   user.effective_cost_per_minute)
-  printf("Cost per trip:\t\t$%.2f\n",   user.effective_cost_per_trip)
-end
+printf("Total time:\t\t%d minutes\n", user.total_time / SECS_PER_MIN)
+printf("Cost per minute:\t$%.2f\n",   user.effective_cost_per_minute)
+printf("Cost per trip:\t\t$%.2f\n",   user.effective_cost_per_trip)
 
 user.bike_trips.reverse.each_with_index do |trip, i|
   break if i >= options.trips
