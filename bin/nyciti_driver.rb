@@ -18,7 +18,9 @@ require 'yaml'
 LOGIN_SUCCESS = 'Welcome To Citi Bike!'
 LOGIN_INFO = YAML.load_file(File.expand_path('../../config/citi_account.yaml',
                             __FILE__))
-SECS_PER_MIN = 60.0
+MINS_PER_HOUR = 60.0
+SECS_PER_MIN  = 60.0
+
 
 class Optparse
 
@@ -65,6 +67,13 @@ class Optparse
 
 end
 
+# Given time in seconds, returns "3 hrs, 25mins"
+def formatted_time(time_in_secs)
+  time_in_hours = time_in_secs / (SECS_PER_MIN * MINS_PER_HOUR)
+  time_in_mins  = (time_in_secs / SECS_PER_MIN) % MINS_PER_HOUR
+  "#{time_in_hours.to_i} hrs, #{time_in_mins.to_i} mins"
+end
+
 options = Optparse.parse(ARGV)
 
 user = nil
@@ -89,7 +98,9 @@ else
   user.bike_trips_to_csv if options.save
 end
 
-printf("Total time:\t\t%d minutes\n", user.total_time / SECS_PER_MIN)
+time_in_mins   = user.total_time / SECS_PER_MIN
+time_str       = formatted_time(user.total_time)
+printf("Total time:\t\t%d minutes (%s)\n", time_in_mins, time_str)
 printf("Cost per minute:\t$%.2f\n",   user.effective_cost_per_minute)
 printf("Cost per trip:\t\t$%.2f\n",   user.effective_cost_per_trip)
 
