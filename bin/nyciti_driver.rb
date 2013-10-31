@@ -16,6 +16,7 @@ require 'optparse'
 require 'ostruct'
 require 'yaml'
 
+FILE_FORMAT = /.csv$/
 LOGIN_SUCCESS = 'Welcome To Citi Bike!'
 LOGIN_INFO = YAML.load_file(File.expand_path('../../config/citi_account.yaml',
                             __FILE__))
@@ -36,13 +37,6 @@ class Optparse
       opts.banner = "Usage: nyciti_driver.rb [options]"
       opts.separator ""
       opts.separator "Specific options:"
-
-      # Optional arguments
-      opts.on("-f", "--file [trips.csv]",
-              "Use specified file for trips and user information;",
-              "  otherwise, download user data from citibikenyc.com") do |file|
-        options.trips_file = file
-      end
 
       opts.on("-t", "--trip N", Integer, "Print last N trips") do |n|
         options.trips = n
@@ -76,11 +70,12 @@ def formatted_time(time_in_secs)
 end
 
 options = Optparse.parse(ARGV)
+trips_file = ARGV[0]
 
 user = nil
 
-if options.trips_file
-  user = FileReader.read_trips(options.trips_file)
+if trips_file && trips_file.match(FILE_FORMAT)
+  user = FileReader.read_trips(trips_file)
 else
   driver   = CitiCrawler.new
   username = LOGIN_INFO['username']
