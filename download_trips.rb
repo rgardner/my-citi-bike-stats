@@ -18,10 +18,6 @@ TRIPS_URL = 'https://citibikenyc.com/member/trips'
 LOGIN_PAGE_TITLE = 'Login | Citi Bike'
 TRIPS_PAGE_TITLE = 'Trips | Citi Bike'
 
-PAGINATION_CSS = 'nav.pagination a/text()'
-
-MIN_TRIP_DURATION = 2 # in minutes
-
 # Get command line options.
 opts = Trollop.options do
   banner 'Download Citi Bike trip data'
@@ -63,20 +59,15 @@ if agent.page.title == LOGIN_PAGE_TITLE
   fail LoginError, 'Invalid username or password'
 end
 
+start_date = nil
+end_date   = nil
+
 # Begin downloading trips.
-page = 1
+agent.get(TRIPS_URL)
 loop do
-  # Visit the trips page.
-  trips_url = "#{TRIPS_URL}/#{page}"
-  agent.get(trips_url)
   break unless agent.page.title == TRIPS_PAGE_TITLE
 
-  # Exclude in-progress and invalid trips.
   rows = Nokogiri::HTML(agent.page.body).xpath('//table/tbody/tr')
-  rows = rows.reject do |row|
-    duration = row.at_xpath('td[6]/text()').to_s.match(/(\d{1,2})m/)
-    !duration || (duration.captures[0].to_i < MIN_TRIP_DURATION)
-  end
 
   # e.x. dates = 'May 01, 2014 - May 02, 2014'
   dates = Nokogiri::HTML(agent.page.body).at_xpath('//h2/text()').to_s
@@ -84,6 +75,9 @@ loop do
   dates = dates.split
   month = dates[0].downcase
   year  = dates[2]
+
+  start_date = dates[0..2].join(' ')
+  end_date = dates[4..6].join(' ') unless end_date
 
   # Setup file
   file = nil
@@ -105,11 +99,10 @@ loop do
       file.puts attributes.join(',')
     end
   end
-  file.close unless file.nil?
+  file.close if file
 
-  # Determine if last webpage by checking pagination
-  last_nav_link = Nokogiri::HTML(agent.page.body).css(PAGINATION_CSS)[-1].to_s
-  break if last_nav_link['›'].nil?
-
-  page += 1
+  # Click the 'next page' link; returns nil if it doesn't exist.
+  break unless agent.click('>')
 end
+
+printf "\nSuccess! Downloaded data from: #{start_date} - #{end_date}"
