@@ -105,4 +105,4 @@ loop do
   break unless agent.click('>')
 end
 
-printf "\nSuccess! Downloaded data from: #{start_date} - #{end_date}"
+printf "\nSuccess! Downloaded data from: #{start_date} - #{end_date}\n"
